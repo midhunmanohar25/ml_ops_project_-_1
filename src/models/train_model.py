@@ -29,9 +29,8 @@ def data_preprocessor(df):
     return preprocessor
 
 
-def split_train_data(df, target):
+def split_train_data(train_df, target):
     # Splitting the train data into target_features and target for feeding model
-    train_df = df
     input_features = train_df.drop(columns=[target])
     target_feature = train_df[target]
     return input_features, target_feature
@@ -65,7 +64,7 @@ def main():
     # 1. Load and Split
     data = load_data(data_path)
     TARGET = 'Price'
-    input_features, target_feature = split_train_data(preprocessor, data, TARGET)
+    input_features, target_feature = split_train_data(data, TARGET)
     
     # 2. Preprocess
     preprocessor = data_preprocessor(input_features)
