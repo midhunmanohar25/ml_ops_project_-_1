@@ -1,0 +1,60 @@
+schema: '2.0'
+stages:
+  build_features:
+    cmd: python .\src\features\build_features.py 
+      .\data\processed\Cleaned_car_dataset.csv
+    deps:
+    - path: .\data\processed\Cleaned_car_dataset.csv
+      hash: md5
+      md5: ab9982c69300f89e367d1c3cd645b4d5
+      size: 38129
+    - path: .\src\features\build_features.py
+      hash: md5
+      md5: fc2135277c64075dfe4fa0f592d2ee82
+      size: 1332
+    outs:
+    - path: .\data\processed\cleaned_car_v1.csv
+      hash: md5
+      md5: 68a840032df71e7ce3f3520d5cfb9364
+      size: 68451
+  impute_model:
+    cmd: python .\src\train_inpute_model\impute_model.py 
+      .\data\processed\cleaned_car_v1.csv
+    deps:
+    - path: .\data\processed\cleaned_car_v1.csv
+      hash: md5
+      md5: 68a840032df71e7ce3f3520d5cfb9364
+      size: 68451
+    - path: .\src\train_inpute_model\impute_model.py
+      hash: md5
+      md5: 2b7683cf9a9029d2d38aea78d8236c0f
+      size: 2752
+    outs:
+    - path: .\data\processed\cleaned_car_v2.csv
+      hash: md5
+      md5: adb8ef827068766c2caf9ec0ffce14be
+      size: 68686
+  make_dataset:
+    cmd: python .\src\data\make_dataset.py .\data\processed\cleaned_car_v2.csv
+    deps:
+    - path: .\data\processed\cleaned_car_v2.csv
+      hash: md5
+      md5: adb8ef827068766c2caf9ec0ffce14be
+      size: 68686
+    - path: .\src\data\make_dataset.py
+      hash: md5
+      md5: 13c6a8271b660ba947be9791f2ebf399
+      size: 1272
+    params:
+      params.yaml:
+        make_dataset.seed: 42
+        make_dataset.test_split: 0.2
+    outs:
+    - path: .\data\processed\test.csv
+      hash: md5
+      md5: a23d8c4ac11f7acfbf638c5b68c24885
+      size: 13881
+    - path: .\data\processed\train.csv
+      hash: md5
+      md5: 7ec7124e3ce558a6a19e11def2f899f9
+      size: 54880
