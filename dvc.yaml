@@ -1,6 +1,6 @@
 stages:
   build_features:
-    cmd: python .\src\features\build_features.py .\data\processed\Cleande_car_dataset.csv
+    cmd: python .\src\features\build_features.py .\data\processed\Cleaned_car_dataset.csv
     deps:
     - .\data\processed\Cleande_car_dataset.csv
     - .\src\features\build_features.py
