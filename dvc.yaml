@@ -1,13 +1,15 @@
 stages:
   build_features:
-    cmd: python .\src\features\build_features.py .\data\processed\Cleaned_car_dataset.csv
+    cmd: python .\src\features\build_features.py 
+      .\data\processed\Cleaned_car_dataset.csv
     deps:
     - .\data\processed\Cleaned_car_dataset.csv
     - .\src\features\build_features.py
     outs:
     - .\data\processed\cleaned_car_v1.csv
   impute_model:
-    cmd: python .\src\train_inpute_model\impute_model.py .\data\processed\cleaned_car_v1.csv
+    cmd: python .\src\train_inpute_model\impute_model.py 
+      .\data\processed\cleaned_car_v1.csv
     deps:
     - .\data\processed\cleaned_car_v1.csv
     - .\src\train_inpute_model\impute_model.py
@@ -37,3 +39,18 @@ stages:
     - train_model.n_estimators
     outs:
     - .\models\
+  visualize:
+    cmd: python .\src\visualization\visualize.py .\models\model.joblib 
+      .\data\processed\
+    deps:
+    - .\data\processed\
+    - .\models\model.joblib
+    - .\src\visualization\visualize.py
+    metrics:
+    - dvclive/metrics.json
+    plots:
+    - dvclive/plots/images
+metrics:
+- dvclive/metrics.json
+plots:
+- dvclive/plots/images

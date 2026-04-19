@@ -67,8 +67,8 @@ stages:
       size: 54880
     - path: .\src\models\train_model.py
       hash: md5
-      md5: 0036fe628b0e31becbb4af2c9be33812
-      size: 2742
+      md5: 91f579839ee43ed59a5423e8bd8c2bfa
+      size: 2825
     params:
       params.yaml:
         train_model.learning_rate: 0.01
@@ -79,6 +79,33 @@ stages:
     outs:
     - path: .\models\
       hash: md5
-      md5: 274f9d899af963e850ee674c682707e5.dir
+      md5: 91caf1a6f4a33bff52bba9d85e4414ec.dir
       size: 268536
       nfiles: 1
+  visualize:
+    cmd: python .\src\visualization\visualize.py .\models\model.joblib 
+      .\data\processed\
+    deps:
+    - path: .\data\processed\
+      hash: md5
+      md5: a56fc9c3fd53c30a59a74977876ed776.dir
+      size: 244027
+      nfiles: 5
+    - path: .\models\model.joblib
+      hash: md5
+      md5: 22cad0306e61547cbfa6599a0125570e
+      size: 268536
+    - path: .\src\visualization\visualize.py
+      hash: md5
+      md5: ea4926523718472a9d350e712a8b9e9a
+      size: 4453
+    outs:
+    - path: dvclive/metrics.json
+      hash: md5
+      md5: dc489ef94ac7fbc554d84bd388e89f5c
+      size: 232
+    - path: dvclive/plots/images
+      hash: md5
+      md5: 9d4bf39e11fa56c48a9e03517d0e8542.dir
+      size: 125779
+      nfiles: 3
