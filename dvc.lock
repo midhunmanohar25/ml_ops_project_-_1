@@ -58,3 +58,27 @@ stages:
       hash: md5
       md5: 7ec7124e3ce558a6a19e11def2f899f9
       size: 54880
+  train_model:
+    cmd: python .\src\models\train_model.py .\data\processed\train.csv
+    deps:
+    - path: .\data\processed\train.csv
+      hash: md5
+      md5: 7ec7124e3ce558a6a19e11def2f899f9
+      size: 54880
+    - path: .\src\models\train_model.py
+      hash: md5
+      md5: 0036fe628b0e31becbb4af2c9be33812
+      size: 2742
+    params:
+      params.yaml:
+        train_model.learning_rate: 0.01
+        train_model.max_depth: 3
+        train_model.min_samples_leaf: 1
+        train_model.min_samples_split: 2
+        train_model.n_estimators: 200
+    outs:
+    - path: .\models\
+      hash: md5
+      md5: 274f9d899af963e850ee674c682707e5.dir
+      size: 268536
+      nfiles: 1
