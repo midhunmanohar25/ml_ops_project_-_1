@@ -6,7 +6,6 @@ import joblib
 import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 def load_data(data_path):

@@ -15,10 +15,17 @@ stages:
     - .\src\train_inpute_model\impute_model.py
     outs:
     - .\data\processed\cleaned_car_v2.csv
-  make_dataset:
-    cmd: python .\src\data\make_dataset.py .\data\processed\cleaned_car_v2.csv
+  export_dataset_file:
+    cmd: python .\src\data\export_dataset_file.py .\data\processed\cleaned_car_v2.csv
     deps:
     - .\data\processed\cleaned_car_v2.csv
+    - .\src\data\export_dataset_file.py
+    outs:
+    - .\models\dataset.joblib
+  make_dataset:
+    cmd: python .\src\data\make_dataset.py .\models\dataset.joblib
+    deps:
+    - .\models\dataset.joblib
     - .\src\data\make_dataset.py
     params:
     - make_dataset.test_split

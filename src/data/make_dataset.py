@@ -1,13 +1,13 @@
 import pathlib
 import yaml
+import joblib
 import sys
 
-import pandas as pd
 from sklearn.model_selection import train_test_split
 
 def load_data(data_path):
     # Load your dataset from a given path
-    df = pd.read_csv(data_path)
+    df = joblib.load(data_path)
     return df
 
 def split_data(df, test_split, seed):
