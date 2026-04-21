@@ -35,16 +35,16 @@ stages:
       md5: adb8ef827068766c2caf9ec0ffce14be
       size: 68686
   make_dataset:
-    cmd: python .\src\data\make_dataset.py .\data\processed\cleaned_car_v2.csv
+    cmd: python .\src\data\make_dataset.py .\models\dataset.joblib
     deps:
-    - path: .\data\processed\cleaned_car_v2.csv
+    - path: .\models\dataset.joblib
       hash: md5
-      md5: adb8ef827068766c2caf9ec0ffce14be
-      size: 68686
+      md5: 1b805cf2203fef7a900e3a1b515dbeb8
+      size: 77518
     - path: .\src\data\make_dataset.py
       hash: md5
-      md5: 13c6a8271b660ba947be9791f2ebf399
-      size: 1272
+      md5: 73580dc0347f15b0f01db14e77afd847
+      size: 1266
     params:
       params.yaml:
         make_dataset.seed: 42
@@ -67,8 +67,8 @@ stages:
       size: 54880
     - path: .\src\models\train_model.py
       hash: md5
-      md5: 91f579839ee43ed59a5423e8bd8c2bfa
-      size: 2825
+      md5: 925c10c1fa66eadeb86a8c0c230966c7
+      size: 2775
     params:
       params.yaml:
         train_model.learning_rate: 0.01
@@ -77,23 +77,22 @@ stages:
         train_model.min_samples_split: 2
         train_model.n_estimators: 200
     outs:
-    - path: .\models\
+    - path: .\models\model.joblib
       hash: md5
-      md5: 91caf1a6f4a33bff52bba9d85e4414ec.dir
+      md5: 0efa64a87b0a295a381e4e3568b75697
       size: 268536
-      nfiles: 1
   visualize:
     cmd: python .\src\visualization\visualize.py .\models\model.joblib 
       .\data\processed\
     deps:
     - path: .\data\processed\
       hash: md5
-      md5: a56fc9c3fd53c30a59a74977876ed776.dir
-      size: 244027
-      nfiles: 5
+      md5: d7739cf5f8e18a0e1168806a9a362152.dir
+      size: 244050
+      nfiles: 6
     - path: .\models\model.joblib
       hash: md5
-      md5: 22cad0306e61547cbfa6599a0125570e
+      md5: 0efa64a87b0a295a381e4e3568b75697
       size: 268536
     - path: .\src\visualization\visualize.py
       hash: md5
@@ -106,6 +105,23 @@ stages:
       size: 232
     - path: dvclive/plots/images
       hash: md5
-      md5: 9d4bf39e11fa56c48a9e03517d0e8542.dir
-      size: 125779
+      md5: 056c9cd5dfe4dde947a3a6a6965f6602.dir
+      size: 125785
       nfiles: 3
+  export_dataset_file:
+    cmd: python .\src\data\export_dataset_file.py 
+      .\data\processed\cleaned_car_v2.csv
+    deps:
+    - path: .\data\processed\cleaned_car_v2.csv
+      hash: md5
+      md5: adb8ef827068766c2caf9ec0ffce14be
+      size: 68686
+    - path: .\src\data\export_dataset_file.py
+      hash: md5
+      md5: beb5ccd0d40435bb81864b39031169fb
+      size: 701
+    outs:
+    - path: .\models\dataset.joblib
+      hash: md5
+      md5: 1b805cf2203fef7a900e3a1b515dbeb8
+      size: 77518

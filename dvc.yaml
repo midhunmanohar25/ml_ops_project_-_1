@@ -16,7 +16,8 @@ stages:
     outs:
     - .\data\processed\cleaned_car_v2.csv
   export_dataset_file:
-    cmd: python .\src\data\export_dataset_file.py .\data\processed\cleaned_car_v2.csv
+    cmd: python .\src\data\export_dataset_file.py 
+      .\data\processed\cleaned_car_v2.csv
     deps:
     - .\data\processed\cleaned_car_v2.csv
     - .\src\data\export_dataset_file.py
@@ -45,7 +46,7 @@ stages:
     - train_model.min_samples_split
     - train_model.n_estimators
     outs:
-    - .\models\
+    - .\models\model.joblib
   visualize:
     cmd: python .\src\visualization\visualize.py .\models\model.joblib 
       .\data\processed\
