@@ -54,12 +54,12 @@ kms_per_year = input_kilometers / (car_age + 1)
 
 # MODEL LOADING PERFORMANCE
 @st.cache_resource
-def load_model():
-    model_path = "models/model.joblib"
-    model = joblib.load(model_path)
-    return model
+def load_pipeline():
+    pipeline_path = "models/pipeline.joblib"
+    pipeline = joblib.load(pipeline_path)
+    return pipeline
 
-model = load_model()
+pipeline = load_pipeline()
 
 # Predicting the value
 if st.button("Predict"):
@@ -69,24 +69,8 @@ if st.button("Predict"):
     
     one_df = pd.DataFrame(data, columns=columns)
     
-    # numerical_col = df.select_dtypes(['int','float']).columns.to_list()
-    # categorical_col = df.select_dtypes(['object']).columns.to_list()
-    
-    # preprocessor = ColumnTransformer(
-    #     transformers=[
-    #         ('num', StandardScaler(), numerical_col),
-    #         ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_col)
-    #     ],
-    #     remainder='passthrough'
-    # )
-    # pipeline = Pipeline([
-    # ("preprocessor", preprocessor),
-    # ("model", model)
-    # ])
-    
-    # one_df = pipeline.fit(one_df)
     # Predict
-    pred_score = model.predict(one_df)
+    pred_score = pipeline.predict(one_df)
     
     base_price = np.expm1(pred_score)[0]
     # display
