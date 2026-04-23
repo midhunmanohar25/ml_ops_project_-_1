@@ -10,21 +10,21 @@ stages:
       size: 38129
     - path: .\src\features\build_features.py
       hash: md5
-      md5: fc2135277c64075dfe4fa0f592d2ee82
-      size: 1332
+      md5: 23a5e688c177584ef1ef4d4afab1faeb
+      size: 1282
     outs:
     - path: .\data\processed\cleaned_car_v1.csv
       hash: md5
-      md5: 68a840032df71e7ce3f3520d5cfb9364
-      size: 68451
+      md5: 34f2fa94c125cab11963b25e7051c6b9
+      size: 59066
   impute_model:
     cmd: python .\src\train_inpute_model\impute_model.py 
       .\data\processed\cleaned_car_v1.csv
     deps:
     - path: .\data\processed\cleaned_car_v1.csv
       hash: md5
-      md5: 68a840032df71e7ce3f3520d5cfb9364
-      size: 68451
+      md5: 34f2fa94c125cab11963b25e7051c6b9
+      size: 59066
     - path: .\src\train_inpute_model\impute_model.py
       hash: md5
       md5: 2b7683cf9a9029d2d38aea78d8236c0f
@@ -32,14 +32,14 @@ stages:
     outs:
     - path: .\data\processed\cleaned_car_v2.csv
       hash: md5
-      md5: adb8ef827068766c2caf9ec0ffce14be
-      size: 68686
+      md5: eafc84ce2a7dafaf856351335f41797d
+      size: 59362
   make_dataset:
     cmd: python .\src\data\make_dataset.py .\models\dataset.joblib
     deps:
     - path: .\models\dataset.joblib
       hash: md5
-      md5: 1b805cf2203fef7a900e3a1b515dbeb8
+      md5: b654ac97fde8a2fdf6dd2dc9c72886eb
       size: 77518
     - path: .\src\data\make_dataset.py
       hash: md5
@@ -52,23 +52,23 @@ stages:
     outs:
     - path: .\data\processed\test.csv
       hash: md5
-      md5: a23d8c4ac11f7acfbf638c5b68c24885
-      size: 13881
+      md5: 4c3b94744fb0ddb8b3b6572acfe90145
+      size: 11989
     - path: .\data\processed\train.csv
       hash: md5
-      md5: 7ec7124e3ce558a6a19e11def2f899f9
-      size: 54880
+      md5: b85e4a0043620fc629a2f9747b60965f
+      size: 47448
   train_model:
     cmd: python .\src\models\train_model.py .\data\processed\train.csv
     deps:
     - path: .\data\processed\train.csv
       hash: md5
-      md5: 7ec7124e3ce558a6a19e11def2f899f9
-      size: 54880
+      md5: b85e4a0043620fc629a2f9747b60965f
+      size: 47448
     - path: .\src\models\train_model.py
       hash: md5
-      md5: 925c10c1fa66eadeb86a8c0c230966c7
-      size: 2775
+      md5: 8a4505a2d56a6919569c819c60f8d1e1
+      size: 2782
     params:
       params.yaml:
         train_model.learning_rate: 0.01
@@ -79,34 +79,34 @@ stages:
     outs:
     - path: .\models\model.joblib
       hash: md5
-      md5: 0efa64a87b0a295a381e4e3568b75697
-      size: 268536
+      md5: 4db616e0a5ddb0acc1b17faf468f4a14
+      size: 268248
   visualize:
-    cmd: python .\src\visualization\visualize.py .\models\model.joblib 
+    cmd: python .\src\visualization\visualize.py .\models\pipeline.joblib 
       .\data\processed\
     deps:
     - path: .\data\processed\
       hash: md5
-      md5: d7739cf5f8e18a0e1168806a9a362152.dir
-      size: 244050
+      md5: 61dbdcda2db90762d7485d6fdfc329b8.dir
+      size: 216038
       nfiles: 6
-    - path: .\models\model.joblib
+    - path: .\models\pipeline.joblib
       hash: md5
-      md5: 0efa64a87b0a295a381e4e3568b75697
-      size: 268536
+      md5: 409888b471b9ea2b2614ebdc3789a9f0
+      size: 275970
     - path: .\src\visualization\visualize.py
       hash: md5
-      md5: ea4926523718472a9d350e712a8b9e9a
-      size: 4453
+      md5: 5ac03bf0478d1e2dfd5b44e54eb90a31
+      size: 3836
     outs:
     - path: dvclive/metrics.json
       hash: md5
-      md5: dc489ef94ac7fbc554d84bd388e89f5c
+      md5: 7dd26577904bc4c39ce3aad8ac6217e9
       size: 232
     - path: dvclive/plots/images
       hash: md5
-      md5: 056c9cd5dfe4dde947a3a6a6965f6602.dir
-      size: 125785
+      md5: 73783bb40462b00cf6fb38a9e7e033bf.dir
+      size: 125881
       nfiles: 3
   export_dataset_file:
     cmd: python .\src\data\export_dataset_file.py 
@@ -114,8 +114,8 @@ stages:
     deps:
     - path: .\data\processed\cleaned_car_v2.csv
       hash: md5
-      md5: adb8ef827068766c2caf9ec0ffce14be
-      size: 68686
+      md5: eafc84ce2a7dafaf856351335f41797d
+      size: 59362
     - path: .\src\data\export_dataset_file.py
       hash: md5
       md5: beb5ccd0d40435bb81864b39031169fb
@@ -123,5 +123,26 @@ stages:
     outs:
     - path: .\models\dataset.joblib
       hash: md5
-      md5: 1b805cf2203fef7a900e3a1b515dbeb8
+      md5: b654ac97fde8a2fdf6dd2dc9c72886eb
       size: 77518
+  predict_model:
+    cmd: python .\src\models\predict_model.py .\models\model.joblib 
+      .\data\processed\train.csv
+    deps:
+    - path: .\data\processed\train.csv
+      hash: md5
+      md5: b85e4a0043620fc629a2f9747b60965f
+      size: 47448
+    - path: .\models\model.joblib
+      hash: md5
+      md5: 4db616e0a5ddb0acc1b17faf468f4a14
+      size: 268248
+    - path: .\src\models\predict_model.py
+      hash: md5
+      md5: aee51ae760b346d940703bc07ff364b4
+      size: 1969
+    outs:
+    - path: .\models\pipeline.joblib
+      hash: md5
+      md5: 409888b471b9ea2b2614ebdc3789a9f0
+      size: 275970
