@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
+from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from datetime import datetime
 
 data_path = "models/dataset.joblib"
 df = joblib.load(data_path)
@@ -14,27 +14,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# st.markdown(
-#     """
-#     <style>
-#     div[data-testid="stImage"] {
-#         display: flex;
-#         justify-content: center;
-#     }
-
-#     div[data-testid="stImage"] img {
-#         max-height: 700px !important;
-#         width: 200 !important;
-#         object-fit: cover;
-#         object-position: center;
-#     }
-#     </style>
-#     """,
-#     unsafe_allow_html=True
-# )
-
-# st.image("Images/car_banner.png", use_container_width=True)
-
 st.title("Used Car Price Recommendation System")
 
 with st.container():
@@ -43,25 +22,35 @@ with st.container():
 
     with col1:
         selected_company = st.selectbox('Company',df['company'].unique().tolist())
-        luxury_brand = ['bmw', 'audi', 'mercedes', 'jaguar', 'mini']
-        is_luxury = df[selected_company].str.lower().isin(luxury_brand).astype(int)
+
     
     with col2:
-        selected_name = st.selectbox('Car Name',df['name'].unique().tolist())
+        if selected_company == 'Bmw':
+    
+            names = df['name'].str.startswith('BMW')
+            fetched_names = df[names]['name']
+            selected_name = st.selectbox('Car Name',fetched_names.unique().tolist())
+    
+        elif selected_company in df['company'].values:
+    
+            names = df['name'].str.startswith(selected_company)
+            fetched_names = df[names]['name']
+            selected_name = st.selectbox('Car Name',fetched_names.unique().tolist())
 
     with col3:
         selected_year = st.selectbox('Select Year',sorted(df['year'].unique().tolist(),reverse=True))
         input_kilometers = float(st.number_input('Enter Kilometers',min_value=0,max_value=400000,step=1))
-        current_year = datetime.now().year
-        car_age = current_year - selected_year
-        kms_per_year = input_kilometers / (car_age + 1)
+        
 
     with col4:
         selected_fueltype = st.selectbox('Select Fuel Type',['Petrol','Diesel'])
     
-    
-    
-        
+       
+luxury_brand = ['bmw', 'audi', 'mercedes', 'jaguar', 'mini']
+is_luxury = int(selected_company.lower() in luxury_brand)
+current_year = 2020
+car_age = current_year - selected_year
+kms_per_year = input_kilometers / (car_age + 1)
 
 # MODEL LOADING PERFORMANCE
 @st.cache_resource
@@ -80,18 +69,22 @@ if st.button("Predict"):
     
     one_df = pd.DataFrame(data, columns=columns)
     
-    numerical_col = df.select_dtypes(['int','float']).columns.to_list()
-    categorical_col = df.select_dtypes(['object']).columns.to_list()
+    # numerical_col = df.select_dtypes(['int','float']).columns.to_list()
+    # categorical_col = df.select_dtypes(['object']).columns.to_list()
     
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('num', StandardScaler(), numerical_col),
-            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_col)
-        ],
-        remainder='passthrough'
-    )
+    # preprocessor = ColumnTransformer(
+    #     transformers=[
+    #         ('num', StandardScaler(), numerical_col),
+    #         ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_col)
+    #     ],
+    #     remainder='passthrough'
+    # )
+    # pipeline = Pipeline([
+    # ("preprocessor", preprocessor),
+    # ("model", model)
+    # ])
     
-    one_df = preprocessor.fit_transform(one_df)
+    # one_df = pipeline.fit(one_df)
     # Predict
     pred_score = model.predict(one_df)
     

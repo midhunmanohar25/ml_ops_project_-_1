@@ -15,8 +15,8 @@ def load_data(data_path):
 
 def data_preprocessor(df):
     
-    numerical_col = df.select_dtypes(['int','float']).columns.to_list()
-    categorical_col = df.select_dtypes(['object']).columns.to_list()
+    numerical_col = df.select_dtypes(['number']).columns.to_list()
+    categorical_col = df.select_dtypes(['object', 'category']).columns.to_list()
     
     preprocessor = ColumnTransformer(
         transformers=[

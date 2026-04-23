@@ -11,13 +11,13 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
-def evaluate(model, X, y, split, live):
+def evaluate(pipeline, X, y, split, live):
     """
     Log regression metrics and actual vs predicted plots using DVCLive.
     """
     # 1. Get predictions
     # Note: If your model requires encoded data, ensure X is preprocessed
-    predictions = model.predict(X)
+    predictions = pipeline.predict(X)
 
     # 2. Calculate Regression Metrics
     mae = metrics.mean_absolute_error(y, predictions)
@@ -48,12 +48,14 @@ def evaluate(model, X, y, split, live):
     live.log_image(f"plots/actual_vs_pred_{split}.png", fig)
     plt.close(fig)
 
-def save_feature_importance(live, model, feature_names):
+def save_feature_importance(live, pipeline, feature_names):
     """
     Saves a plot of which features (year, kms, company) matter most.
     """
-    if hasattr(model, 'feature_importances_'):
-        importances = model.feature_importances_
+    model_step = pipeline.named_steps['model']
+    
+    if hasattr(model_step, 'feature_importances_'):
+        importances = model_step.feature_importances_
         # Sort features by importance
         indices = np.argsort(importances)[-10:]  # Top 10
         
@@ -72,8 +74,8 @@ def main():
     home_dir = curr_dir.parent.parent.parent
     
     # Load the model.
-    model_file = sys.argv[1]
-    model = joblib.load(model_file)
+    pipeline_file = sys.argv[1]
+    pipeline = joblib.load(pipeline_file)
     
     # Load the data.
     input_file = sys.argv[2]
@@ -90,36 +92,19 @@ def main():
     test_df = pd.read_csv(data_path + '/test.csv')
 
     # Separate Features and Target BEFORE preprocessing
-    X_train_raw = train_df.drop(columns=[TARGET])
+    X_train = train_df.drop(columns=[TARGET])
     y_train = train_df[TARGET]
-    X_test_raw = test_df.drop(columns=[TARGET])
+    X_test = test_df.drop(columns=[TARGET])
     y_test = test_df[TARGET]
 
-    # 3. Preprocessing
-    # Identify columns from the feature set (X), not the whole dataframe
-    num_cols = X_train_raw.select_dtypes(include=['int64', 'float64']).columns.to_list()
-    cat_cols = X_train_raw.select_dtypes(include=['object', 'string']).columns.to_list()
+    # Correctly extract feature names from the preprocessor step
+    feature_names = pipeline.named_steps['preprocessor'].get_feature_names_out()
     
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('num', StandardScaler(), num_cols),
-            ('cat', OneHotEncoder(handle_unknown='ignore'), cat_cols)
-        ]
-    )
-    
-    # Fit on train, transform both
-    X_train = preprocessor.fit_transform(X_train_raw)
-    X_test = preprocessor.transform(X_test_raw) # Use transform, NOT fit_transform for test!
-
-    # 4. Get Feature Names (for the importance plot)
-    # This handles the new columns created by OneHotEncoder
-    feature_names = preprocessor.get_feature_names_out()
-
     # 4. Start DVCLive session
     with Live(output_path.as_posix(), dvcyaml=True) as live:
-        evaluate(model, X_train, y_train, "train", live)
-        evaluate(model, X_test, y_test, "test", live)
-        save_feature_importance(live, model, feature_names)
+        evaluate(pipeline, X_train, y_train, "train", live)
+        evaluate(pipeline, X_test, y_test, "test", live)
+        save_feature_importance(live, pipeline, feature_names)
 
 if __name__ == "__main__":
     main()

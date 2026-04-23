@@ -28,7 +28,6 @@ def build_feature(df):
     
     # Log transform
     df['Price'] = np.log1p(df['Price'])
-    df['kms_driven'] = np.log1p(df['kms_driven'])
     
     return df
 

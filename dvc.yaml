@@ -47,12 +47,21 @@ stages:
     - train_model.n_estimators
     outs:
     - .\models\model.joblib
+  predict_model:
+    cmd: python .\src\models\predict_model.py .\models\model.joblib 
+      .\data\processed\train.csv
+    deps:
+    - .\data\processed\train.csv
+    - .\models\model.joblib
+    - .\src\models\predict_model.py
+    outs:
+    - .\models\pipeline.joblib
   visualize:
-    cmd: python .\src\visualization\visualize.py .\models\model.joblib 
+    cmd: python .\src\visualization\visualize.py .\models\pipeline.joblib 
       .\data\processed\
     deps:
     - .\data\processed\
-    - .\models\model.joblib
+    - .\models\pipeline.joblib
     - .\src\visualization\visualize.py
     metrics:
     - dvclive/metrics.json
