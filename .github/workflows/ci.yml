@@ -25,6 +25,16 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run app file
+    - name: Run app and Test
       run: |
-        python app.py
+        # 1. Start the app in the background (&)
+        python app.py & 
+        
+        # 2. Wait for the server to boot up
+        sleep 5 
+        
+        # 3. Test if the app is alive (Health Check)
+        curl --fail http://127.0.0.1:8000 || exit 1
+        
+        # 4. Kill the background process so the CI can finish
+        pkill python
