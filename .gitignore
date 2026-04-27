@@ -88,4 +88,7 @@ target/
 # Mypy cache
 .mypy_cache/
 /models
+/dvclive
+/mlruns
+/data
 # /pipeline.joblib
