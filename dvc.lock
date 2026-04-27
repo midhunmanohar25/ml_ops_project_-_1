@@ -92,12 +92,12 @@ stages:
       nfiles: 6
     - path: .\models\pipeline.joblib
       hash: md5
-      md5: 409888b471b9ea2b2614ebdc3789a9f0
+      md5: 8fcb0debb3b9b722f249b3b8898053cb
       size: 275970
     - path: .\src\visualization\visualize.py
       hash: md5
-      md5: 5ac03bf0478d1e2dfd5b44e54eb90a31
-      size: 3836
+      md5: 7cfcc47bc30bad2207dbc8fd1d09558d
+      size: 3653
     outs:
     - path: dvclive/metrics.json
       hash: md5
@@ -105,8 +105,8 @@ stages:
       size: 232
     - path: dvclive/plots/images
       hash: md5
-      md5: 73783bb40462b00cf6fb38a9e7e033bf.dir
-      size: 125881
+      md5: c85dc254fbe635ba056199aaffbdd991.dir
+      size: 125876
       nfiles: 3
   export_dataset_file:
     cmd: python .\src\data\export_dataset_file.py 
@@ -139,10 +139,14 @@ stages:
       size: 268248
     - path: .\src\models\predict_model.py
       hash: md5
-      md5: aee51ae760b346d940703bc07ff364b4
-      size: 1969
+      md5: 55d06100454fb4d03f536a77aeb402e6
+      size: 2025
     outs:
     - path: .\models\pipeline.joblib
       hash: md5
-      md5: 409888b471b9ea2b2614ebdc3789a9f0
+      md5: 8fcb0debb3b9b722f249b3b8898053cb
+      size: 275970
+    - path: .\pipeline.joblib
+      hash: md5
+      md5: 8fcb0debb3b9b722f249b3b8898053cb
       size: 275970

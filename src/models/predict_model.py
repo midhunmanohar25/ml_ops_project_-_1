@@ -1,6 +1,5 @@
 import pathlib
 import sys
-import yaml
 import joblib
 
 import pandas as pd
@@ -63,6 +62,7 @@ def main():
     train_data = load_data(data_path)
     pipeline = build_and_train_pipeline(train_data, TARGET, model)
     save_pipeline(pipeline, output_path)
+    joblib.dump(pipeline, home_dir.as_posix() + '/pipeline.joblib')
     
 if __name__ == "__main__":
     main()

@@ -3,13 +3,10 @@ import joblib
 import sys
 import pandas as pd
 import numpy as np
-import seaborn as sns
+
 from sklearn import metrics
 from dvclive import Live
 from matplotlib import pyplot as plt
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 def evaluate(pipeline, X, y, split, live):
     """

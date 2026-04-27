@@ -56,6 +56,7 @@ stages:
     - .\src\models\predict_model.py
     outs:
     - .\models\pipeline.joblib
+    - .\pipeline.joblib
   visualize:
     cmd: python .\src\visualization\visualize.py .\models\pipeline.joblib 
       .\data\processed\
