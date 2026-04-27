@@ -18,7 +18,7 @@ class CarInput(BaseModel):
 
 # 3. Load the pre-trained Pipeline
 # Using a Pipeline is better because it handles preprocessing automatically
-model_path = "models/pipeline.joblib"
+model_path = "pipeline.joblib"
 pipeline = joblib.load(model_path)
 
 @app.get("/")
