@@ -17,7 +17,8 @@ RUN pip install -r requirements.txt
 # RUN mkdir /app/models
 # RUN aws s3 cp s3://creditcard-project/models/model.joblib /app/models/model.joblib
 
-EXPOSE 8080
+# Port
+EXPOSE 8000
 
 # Run app.py when the container launches
 CMD ["python", "app.py"]

@@ -21,9 +21,14 @@ class CarInput(BaseModel):
 model_path = "pipeline.joblib"
 pipeline = joblib.load(model_path)
 
+
 @app.get("/")
 def home():
     return {"status": "API is online", "message": "Send a POST request to /predict"}
+
+@app.get("/welcome")
+def welcome():
+    return {"message": "Hi welcome to the Mlops project app created by Midhun Manohar"}
 
 @app.post("/predict")
 def predict(data: CarInput):
@@ -60,4 +65,5 @@ def predict(data: CarInput):
     }
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # 127.0.0.1
