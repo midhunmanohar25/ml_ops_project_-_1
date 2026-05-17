@@ -7,6 +7,7 @@ stages:
     - .\src\features\build_features.py
     outs:
     - .\data\processed\cleaned_car_v1.csv
+
   impute_model:
     cmd: python .\src\train_inpute_model\impute_model.py 
       .\data\processed\cleaned_car_v1.csv
@@ -15,6 +16,7 @@ stages:
     - .\src\train_inpute_model\impute_model.py
     outs:
     - .\data\processed\cleaned_car_v2.csv
+
   export_dataset_file:
     cmd: python .\src\data\export_dataset_file.py 
       .\data\processed\cleaned_car_v2.csv
@@ -23,6 +25,7 @@ stages:
     - .\src\data\export_dataset_file.py
     outs:
     - .\models\dataset.joblib
+
   make_dataset:
     cmd: python .\src\data\make_dataset.py .\models\dataset.joblib
     deps:
@@ -34,6 +37,7 @@ stages:
     outs:
     - .\data\processed\train.csv
     - .\data\processed\test.csv
+
   train_model:
     cmd: python .\src\models\train_model.py .\data\processed\train.csv
     deps:
@@ -47,6 +51,7 @@ stages:
     - train_model.n_estimators
     outs:
     - .\models\model.joblib
+
   predict_model:
     cmd: python .\src\models\predict_model.py .\models\model.joblib 
       .\data\processed\train.csv
@@ -57,6 +62,7 @@ stages:
     outs:
     - .\models\pipeline.joblib
     - .\pipeline.joblib
+
   visualize:
     cmd: python .\src\visualization\visualize.py .\models\pipeline.joblib 
       .\data\processed\
@@ -64,11 +70,3 @@ stages:
     - .\data\processed\
     - .\models\pipeline.joblib
     - .\src\visualization\visualize.py
-    metrics:
-    - dvclive/metrics.json
-    plots:
-    - dvclive/plots/images
-metrics:
-- dvclive/metrics.json
-plots:
-- dvclive/plots/images

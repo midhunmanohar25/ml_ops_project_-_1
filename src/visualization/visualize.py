@@ -3,14 +3,16 @@ import joblib
 import sys
 import pandas as pd
 import numpy as np
+import mlflow
+import mlflow.sklearn
 
 from sklearn import metrics
-from dvclive import Live
 from matplotlib import pyplot as plt
+# from dvclive import Live
 
-def evaluate(pipeline, X, y, split, live):
+def evaluate(pipeline, X, y, split):
     """
-    Log regression metrics and actual vs predicted plots using DVCLive.
+    Log regression metrics and actual vs predicted plots using MLflow.
     """
     # 1. Get predictions
     # Note: If your model requires encoded data, ensure X is preprocessed
@@ -22,17 +24,18 @@ def evaluate(pipeline, X, y, split, live):
     rmse = np.sqrt(mse)
     r2 = metrics.r2_score(y, predictions)
 
-    # 3. Log metrics to DVCLive summary
-    if not live.summary:
-        live.summary = {}
-    
-    live.summary[f"{split}_mae"] = mae
-    live.summary[f"{split}_rmse"] = rmse
-    live.summary[f"{split}_r2"] = r2
+    # 3. Log metrics to MLflow
+    mlflow.log_metric(f"{split}_mae", mae)
+    mlflow.log_metric(f"{split}_rmse", rmse)
+    mlflow.log_metric(f"{split}_r2", r2)
+
+
+
 
     # 4. Create Actual vs Predicted plot
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.scatter(y, predictions, alpha=0.4, color='teal')
+    
     # Draw the "Perfect Prediction" line
     line_coords = [y.min(), y.max()]
     ax.plot(line_coords, line_coords, 'r--', lw=2)
@@ -41,11 +44,14 @@ def evaluate(pipeline, X, y, split, live):
     ax.set_ylabel('Predicted Log-Price')
     ax.set_title(f'Actual vs Predicted - {split.capitalize()} Set')
     
-    # Save to DVCLive
-    live.log_image(f"plots/actual_vs_pred_{split}.png", fig)
+    # 5. Save Figure to MLflow
+    mlflow.log_figure(fig, f"plots/actual_vs_pred_{split}.png")
     plt.close(fig)
 
-def save_feature_importance(live, pipeline, feature_names):
+
+
+
+def save_feature_importance(pipeline, feature_names):
     """
     Saves a plot of which features (year, kms, company) matter most.
     """
@@ -62,7 +68,7 @@ def save_feature_importance(live, pipeline, feature_names):
         ax.set_yticklabels([feature_names[i] for i in indices])
         ax.set_title("Top 10 Feature Importances (Gradient Boosting)")
         
-        live.log_image("plots/importance.png", fig)
+        mlflow.log_figure(fig, "plots/importance.png")
         plt.close(fig)
 
 def main():
@@ -97,11 +103,19 @@ def main():
     # Correctly extract feature names from the preprocessor step
     feature_names = pipeline.named_steps['preprocessor'].get_feature_names_out()
     
-    # 4. Start DVCLive session
-    with Live(output_path.as_posix(), dvcyaml=True) as live:
-        evaluate(pipeline, X_train, y_train, "train", live)
-        evaluate(pipeline, X_test, y_test, "test", live)
-        save_feature_importance(live, pipeline, feature_names)
+    # --- MLflow Execution ---
+    mlflow.set_experiment("Car_Price_Prediction")
+    
+    with mlflow.start_run(run_name="Evaluation_Final"):
+        # Log the pipeline artifact itself for traceability
+        mlflow.sklearn.log_model(pipeline, "final_pipeline")
+        
+        # Run evaluations
+        evaluate(pipeline, X_train, y_train, "train")
+        evaluate(pipeline, X_test, y_test, "test")
+        save_feature_importance(pipeline, feature_names)
+        
+        print("Evaluation complete. Metrics and plots logged to MLflow.")
 
 if __name__ == "__main__":
     main()

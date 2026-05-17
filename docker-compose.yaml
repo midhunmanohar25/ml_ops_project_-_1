@@ -1,0 +1,12 @@
+services:
+  predict_app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - MLFLOW_TRACKING_URI=http://host.docker.internal:5000
+      - MODEL_NAME=Car_Price_Pipeline
+      - MODEL_VERSION=Production
+    volumes:
+      # Maps your local MLflow data to the container so it can physically find the model files
+      - ./mlruns:/app/mlruns

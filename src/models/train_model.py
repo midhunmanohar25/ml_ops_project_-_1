@@ -2,17 +2,22 @@ import pathlib
 import sys
 import yaml
 import joblib
+import mlflow
+import mlflow.sklearn
 
 import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
+# ---------------- Load Data ----------------
 def load_data(data_path):
     # Load your dataset from a given path
     df = pd.read_csv(data_path)
     return df
 
+
+# ---------------- Preprocessor ----------------
 def data_preprocessor(df):
     
     numerical_col = df.select_dtypes(['number']).columns.to_list()
@@ -28,6 +33,7 @@ def data_preprocessor(df):
     return preprocessor
 
 
+# ---------------- Split Features ----------------
 def split_train_data(train_df, target):
     # Splitting the train data into target_features and target for feeding model
     input_features = train_df.drop(columns=[target])
@@ -60,20 +66,29 @@ def main():
     output_path = home_dir.as_posix() + '/models'
     pathlib.Path(output_path).mkdir(parents=True, exist_ok=True)
     
-    # 1. Load and Split
-    data = load_data(data_path)
-    TARGET = 'Price'
-    input_features, target_feature = split_train_data(data, TARGET)
     
-    # 2. Preprocess
-    preprocessor = data_preprocessor(input_features)
-    transformed_input = preprocessor.fit_transform(input_features)
+    # 1. MLflow Tracking Setup
+    mlflow.set_experiment("Car_Price_Prediction")
     
-    # 3. Train
-    trained_model = train_model(transformed_input, target_feature, params['learning_rate'], params['max_depth'], params['min_samples_leaf'], params['min_samples_split'], params['n_estimators'])
-    
-    # 4. Save
-    save_model(trained_model, output_path)
+    with mlflow.start_run(run_name="Model_Training"):
+        # 1. Load and Split
+        data = load_data(data_path)
+        TARGET = 'Price'
+        input_features, target_feature = split_train_data(data, TARGET)
+        
+        # 2. Preprocess
+        preprocessor = data_preprocessor(input_features)
+        transformed_input = preprocessor.fit_transform(input_features)
+        
+        # 4. Train & Log Params
+        mlflow.log_params(params)
+        
+        # 3. Train
+        trained_model = train_model(transformed_input, target_feature, params['learning_rate'], params['max_depth'], params['min_samples_leaf'], params['min_samples_split'], params['n_estimators'])
+        
+        # 4. Save
+        save_model(trained_model, output_path)
+        mlflow.sklearn.log_model(trained_model, "gradient_boosting_model")
     
 
 if __name__ == "__main__":

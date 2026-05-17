@@ -1,6 +1,8 @@
 import pathlib
 import sys
 import joblib
+import mlflow
+import mlflow.sklearn
 
 import pandas as pd
 from sklearn.pipeline import Pipeline
@@ -38,8 +40,8 @@ def build_and_train_pipeline(train_df, target, model):
     ])
     
     pipeline.fit(X_train_df, y_train_df)
-    
     return pipeline
+    
     
 def save_pipeline(pipeline, output_path):
     # Save the Pipeline to the specified output path
@@ -57,12 +59,24 @@ def main():
     output_path = home_dir.as_posix() + '/models'
     pathlib.Path(output_path).mkdir(parents=True, exist_ok=True)
     
-    TARGET = "Price"
-    model = import_model(model_file)
-    train_data = load_data(data_path)
-    pipeline = build_and_train_pipeline(train_data, TARGET, model)
-    save_pipeline(pipeline, output_path)
-    joblib.dump(pipeline, home_dir.as_posix() + '/pipeline.joblib')
+    # 1. MLflow Setup
+    mlflow.set_experiment("Car_Price_Prediction")
+    
+    with mlflow.start_run(run_name="Pipeline_Finalization"):
+        TARGET = "Price"
+        model = import_model(model_file)
+        train_data = load_data(data_path)
+        
+        # 2. Build Pipeline
+        pipeline = build_and_train_pipeline(train_data, TARGET, model)
+        
+        # 3. Save Locally & Log Pipeline to MLflow
+        save_pipeline(pipeline, output_path)
+        joblib.dump(pipeline, home_dir.as_posix() + '/pipeline.joblib')
+        mlflow.sklearn.log_model(pipeline, "final_car_price_pipeline")
+        
+        # Log a tag to help identify this as the production-ready pipeline
+        mlflow.set_tag("stage", "inference_ready")
     
 if __name__ == "__main__":
     main()

@@ -2,7 +2,8 @@ from fastapi import FastAPI
 import joblib
 import pandas as pd
 import numpy as np
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, computed_field
+from typing import Annotated, Literal
 import uvicorn
 
 # 1. Initialize FastAPI
@@ -10,11 +11,18 @@ app = FastAPI(title="Used Car Price API")
 
 # 2. Define the Input Schema using Pydantic
 class CarInput(BaseModel):
-    name: str
-    company: str
-    year: int
-    kms_driven: float
-    fuel_type: str
+    name: Annotated[str, Field(..., description='Name of the Car', examples=['Maruti Suzuki Alto'])]
+    company: Annotated[str, Field(..., description='Name of the Company that the Car belongs to', examples=['Maruti'])]
+    year: Annotated[int, Field(..., description='Car Purchased Year')]
+    kms_driven: Annotated[float, Field(...,gt=0, description='Kilometer Driven in Float')]
+    fuel_type: Annotated[Literal['Diesel', 'Petrol'], Field(..., description='Fuel Type of the Car')]
+    
+    # @computed_field
+    # @property
+    # def luxury(self) -> str:
+    #     luxury_brands = ['bmw', 'audi', 'mercedes', 'jaguar', 'mini', 'land rover']
+    #     is_luxury = 1 if self.company.lower() in luxury_brands else 0
+    #     return is_luxury
 
 # 3. Load the pre-trained Pipeline
 # Using a Pipeline is better because it handles preprocessing automatically

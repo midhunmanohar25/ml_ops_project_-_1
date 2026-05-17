@@ -67,8 +67,8 @@ stages:
       size: 47448
     - path: .\src\models\train_model.py
       hash: md5
-      md5: 8a4505a2d56a6919569c819c60f8d1e1
-      size: 2782
+      md5: 07fd7274fcb3acf7fca6bdb3afc3e247
+      size: 3331
     params:
       params.yaml:
         train_model.learning_rate: 0.01
@@ -79,7 +79,7 @@ stages:
     outs:
     - path: .\models\model.joblib
       hash: md5
-      md5: 4db616e0a5ddb0acc1b17faf468f4a14
+      md5: abfe3a8ecdc718fe726e06465bfff0d4
       size: 268248
   visualize:
     cmd: python .\src\visualization\visualize.py .\models\pipeline.joblib 
@@ -92,22 +92,12 @@ stages:
       nfiles: 6
     - path: .\models\pipeline.joblib
       hash: md5
-      md5: 8fcb0debb3b9b722f249b3b8898053cb
+      md5: 137a09a9efbe3e6bac5d2ce27f16d90b
       size: 275970
     - path: .\src\visualization\visualize.py
       hash: md5
-      md5: 7cfcc47bc30bad2207dbc8fd1d09558d
-      size: 3653
-    outs:
-    - path: dvclive/metrics.json
-      hash: md5
-      md5: 7dd26577904bc4c39ce3aad8ac6217e9
-      size: 232
-    - path: dvclive/plots/images
-      hash: md5
-      md5: c85dc254fbe635ba056199aaffbdd991.dir
-      size: 125876
-      nfiles: 3
+      md5: 157a808dc9cff39b9f6171cd303391c1
+      size: 3936
   export_dataset_file:
     cmd: python .\src\data\export_dataset_file.py 
       .\data\processed\cleaned_car_v2.csv
@@ -135,18 +125,18 @@ stages:
       size: 47448
     - path: .\models\model.joblib
       hash: md5
-      md5: 4db616e0a5ddb0acc1b17faf468f4a14
+      md5: abfe3a8ecdc718fe726e06465bfff0d4
       size: 268248
     - path: .\src\models\predict_model.py
       hash: md5
-      md5: 55d06100454fb4d03f536a77aeb402e6
-      size: 2025
+      md5: 50a941902027541d9094643cb3e78645
+      size: 2540
     outs:
     - path: .\models\pipeline.joblib
       hash: md5
-      md5: 8fcb0debb3b9b722f249b3b8898053cb
+      md5: 137a09a9efbe3e6bac5d2ce27f16d90b
       size: 275970
     - path: .\pipeline.joblib
       hash: md5
-      md5: 8fcb0debb3b9b722f249b3b8898053cb
+      md5: 137a09a9efbe3e6bac5d2ce27f16d90b
       size: 275970
