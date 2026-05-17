@@ -67,8 +67,8 @@ stages:
       size: 47448
     - path: .\src\models\train_model.py
       hash: md5
-      md5: 07fd7274fcb3acf7fca6bdb3afc3e247
-      size: 3331
+      md5: 4af105b8a497bc0f1b2b74f33b83bd75
+      size: 7141
     params:
       params.yaml:
         train_model.learning_rate: 0.01
@@ -79,7 +79,7 @@ stages:
     outs:
     - path: .\models\model.joblib
       hash: md5
-      md5: abfe3a8ecdc718fe726e06465bfff0d4
+      md5: 20b072a196d306118fe864d9e8520c74
       size: 268248
   visualize:
     cmd: python .\src\visualization\visualize.py .\models\pipeline.joblib 
@@ -92,12 +92,12 @@ stages:
       nfiles: 6
     - path: .\models\pipeline.joblib
       hash: md5
-      md5: 137a09a9efbe3e6bac5d2ce27f16d90b
+      md5: e48336c7b5e67e78c58c68bc72460cc5
       size: 275970
     - path: .\src\visualization\visualize.py
       hash: md5
-      md5: 157a808dc9cff39b9f6171cd303391c1
-      size: 3936
+      md5: b418b5c2f0da9e5451ce8989b2415b73
+      size: 4098
   export_dataset_file:
     cmd: python .\src\data\export_dataset_file.py 
       .\data\processed\cleaned_car_v2.csv
@@ -125,18 +125,18 @@ stages:
       size: 47448
     - path: .\models\model.joblib
       hash: md5
-      md5: abfe3a8ecdc718fe726e06465bfff0d4
+      md5: 20b072a196d306118fe864d9e8520c74
       size: 268248
     - path: .\src\models\predict_model.py
       hash: md5
-      md5: 50a941902027541d9094643cb3e78645
-      size: 2540
+      md5: 9c64ff543deb5282b05d75c5dc9e4442
+      size: 2702
     outs:
     - path: .\models\pipeline.joblib
       hash: md5
-      md5: 137a09a9efbe3e6bac5d2ce27f16d90b
+      md5: e48336c7b5e67e78c58c68bc72460cc5
       size: 275970
     - path: .\pipeline.joblib
       hash: md5
-      md5: 137a09a9efbe3e6bac5d2ce27f16d90b
+      md5: e48336c7b5e67e78c58c68bc72460cc5
       size: 275970

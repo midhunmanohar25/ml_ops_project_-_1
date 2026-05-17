@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import mlflow
 import mlflow.sklearn
+import dagshub
 
 from sklearn import metrics
 from matplotlib import pyplot as plt
@@ -102,6 +103,9 @@ def main():
 
     # Correctly extract feature names from the preprocessor step
     feature_names = pipeline.named_steps['preprocessor'].get_feature_names_out()
+    
+    # Automatically authenticate with DagsHub
+    dagshub.init(repo_owner="midhunmanohar25", repo_name="ml_ops_project_-_1", mlflow=True)
     
     # --- MLflow Execution ---
     mlflow.set_experiment("Car_Price_Prediction")

@@ -3,6 +3,7 @@ import sys
 import joblib
 import mlflow
 import mlflow.sklearn
+import dagshub
 
 import pandas as pd
 from sklearn.pipeline import Pipeline
@@ -58,6 +59,9 @@ def main():
     data_path = home_dir.as_posix() + input_file
     output_path = home_dir.as_posix() + '/models'
     pathlib.Path(output_path).mkdir(parents=True, exist_ok=True)
+    
+    # Automatically authenticate with DagsHub
+    dagshub.init(repo_owner="midhunmanohar25", repo_name="ml_ops_project_-_1", mlflow=True)
     
     # 1. MLflow Setup
     mlflow.set_experiment("Car_Price_Prediction")

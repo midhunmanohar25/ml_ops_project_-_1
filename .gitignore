@@ -92,3 +92,4 @@ models/
 mlruns/
 data/
 # /pipeline.joblib
+/pipeline.joblib
