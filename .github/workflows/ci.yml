@@ -44,19 +44,19 @@ jobs:
         MODEL_NAME: "Car_Price_Pipeline"
         MODEL_VERSION: "1"
       run: |
-        # 1. Start ONLY FastAPI in the background (pointing to your Website folder)
-        uvicorn Website.FastAPI_code:app --host 0.0.0.0 --port 8000 &
+        # 1. Start FastAPI and pipe all logs (errors included) to uvicorn.log
+        uvicorn Website.FastAPI_code:app --host 0.0.0.0 --port 8000 > uvicorn.log 2>&1 &
         
         # 2. Wait for FastAPI to pull the model from MLflow and boot up
         sleep 10 
         
-        # 3. Send a test prediction payload via curl to verify it works
+        # 3. Test if the app is alive. If it fails, print the log file contents!
         curl --fail -X POST http://127.0.0.1:8000/predict \
           -H "Content-Type: application/json" \
-          -d '{"car_age": 5, "is_luxury": true, "kms_per_year": 12000.5}' || exit 1
+          -d '{"car_age": 5, "is_luxury": true, "kms_per_year": 12000.5}' || { echo "❌ === UVICORN CRASH TRACEBACK ==="; cat uvicorn.log; exit 1; }
         
-        # 4. Kill the process so CI can finish
-        pkill uvicorn
+        # 4. Kill the process so CI can finish cleanly
+        pkill -f uvicorn
 
 
   run-using-docker:
