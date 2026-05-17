@@ -1,3 +1,101 @@
+# import pathlib
+# import sys
+# import yaml
+# import joblib
+# import mlflow
+# import mlflow.sklearn
+
+# import pandas as pd
+# from sklearn.ensemble import GradientBoostingRegressor
+# from sklearn.compose import ColumnTransformer
+# from sklearn.preprocessing import StandardScaler, OneHotEncoder
+# from sklearn.pipeline import Pipeline
+
+# # ---------------- Load Data ----------------
+# def load_data(data_path):
+#     # Load your dataset from a given path
+#     df = pd.read_csv(data_path)
+#     return df
+
+
+# # ---------------- Preprocessor ----------------
+# def data_preprocessor(df):
+    
+#     numerical_col = df.select_dtypes(['number']).columns.to_list()
+#     categorical_col = df.select_dtypes(['object', 'category']).columns.to_list()
+    
+#     preprocessor = ColumnTransformer(
+#         transformers=[
+#             ('num', StandardScaler(), numerical_col),
+#             ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_col)
+#         ],
+#         remainder='passthrough'
+#     )
+#     return preprocessor
+
+
+# # ---------------- Split Features ----------------
+# def split_train_data(train_df, target):
+#     # Splitting the train data into target_features and target for feeding model
+#     input_features = train_df.drop(columns=[target])
+#     target_feature = train_df[target]
+#     return input_features, target_feature
+
+
+# def train_model(input_features, target_feature, learning_rate, max_depth, min_samples_leaf, min_samples_split, n_estimators):
+#     # Train your machine learning model
+#     model = GradientBoostingRegressor(learning_rate=learning_rate, max_depth=max_depth, min_samples_leaf=min_samples_leaf, min_samples_split=min_samples_split, n_estimators=n_estimators)
+#     model.fit(input_features, target_feature)
+#     return model
+
+    
+# def save_model(model, output_path):
+#     # Save the trained model to the specified output path
+#     joblib.dump(model, output_path + '/model.joblib')
+    
+
+# def main():
+    
+#     # Setup paths
+#     curr_dir = pathlib.Path(__file__)
+#     home_dir = curr_dir.parent.parent.parent
+#     params_file = home_dir.as_posix() + '/params.yaml'
+#     params = yaml.safe_load(open(params_file))["train_model"]
+    
+#     input_file = sys.argv[1]
+#     data_path = home_dir.as_posix() + input_file
+#     output_path = home_dir.as_posix() + '/models'
+#     pathlib.Path(output_path).mkdir(parents=True, exist_ok=True)
+    
+    
+#     # 1. MLflow Tracking Setup
+#     mlflow.set_experiment("Car_Price_Prediction")
+    
+#     with mlflow.start_run(run_name="Model_Training"):
+#         # 1. Load and Split
+#         data = load_data(data_path)
+#         TARGET = 'Price'
+#         input_features, target_feature = split_train_data(data, TARGET)
+        
+#         # 2. Preprocess
+#         preprocessor = data_preprocessor(input_features)
+#         transformed_input = preprocessor.fit_transform(input_features)
+        
+#         # 4. Train & Log Params
+#         mlflow.log_params(params)
+        
+#         # 3. Train
+#         trained_model = train_model(transformed_input, target_feature, params['learning_rate'], params['max_depth'], params['min_samples_leaf'], params['min_samples_split'], params['n_estimators'])
+        
+#         # 4. Save
+#         save_model(trained_model, output_path)
+#         mlflow.sklearn.log_model(trained_model, "gradient_boosting_model")
+    
+
+# if __name__ == "__main__":
+#     main()
+    
+    
 import pathlib
 import sys
 import yaml
@@ -9,17 +107,16 @@ import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.pipeline import Pipeline  # <-- Added to build a unified pipeline
 
 # ---------------- Load Data ----------------
 def load_data(data_path):
-    # Load your dataset from a given path
     df = pd.read_csv(data_path)
     return df
 
 
 # ---------------- Preprocessor ----------------
 def data_preprocessor(df):
-    
     numerical_col = df.select_dtypes(['number']).columns.to_list()
     categorical_col = df.select_dtypes(['object', 'category']).columns.to_list()
     
@@ -35,26 +132,12 @@ def data_preprocessor(df):
 
 # ---------------- Split Features ----------------
 def split_train_data(train_df, target):
-    # Splitting the train data into target_features and target for feeding model
     input_features = train_df.drop(columns=[target])
     target_feature = train_df[target]
     return input_features, target_feature
 
 
-def train_model(input_features, target_feature, learning_rate, max_depth, min_samples_leaf, min_samples_split, n_estimators):
-    # Train your machine learning model
-    model = GradientBoostingRegressor(learning_rate=learning_rate, max_depth=max_depth, min_samples_leaf=min_samples_leaf, min_samples_split=min_samples_split, n_estimators=n_estimators)
-    model.fit(input_features, target_feature)
-    return model
-
-    
-def save_model(model, output_path):
-    # Save the trained model to the specified output path
-    joblib.dump(model, output_path + '/model.joblib')
-    
-
 def main():
-    
     # Setup paths
     curr_dir = pathlib.Path(__file__)
     home_dir = curr_dir.parent.parent.parent
@@ -66,33 +149,49 @@ def main():
     output_path = home_dir.as_posix() + '/models'
     pathlib.Path(output_path).mkdir(parents=True, exist_ok=True)
     
-    
     # 1. MLflow Tracking Setup
     mlflow.set_experiment("Car_Price_Prediction")
     
     with mlflow.start_run(run_name="Model_Training"):
-        # 1. Load and Split
+        # Load and Split Data
         data = load_data(data_path)
         TARGET = 'Price'
         input_features, target_feature = split_train_data(data, TARGET)
         
-        # 2. Preprocess
+        # Build the Preprocessor Configuration
         preprocessor = data_preprocessor(input_features)
-        transformed_input = preprocessor.fit_transform(input_features)
         
-        # 4. Train & Log Params
+        # 2. Assemble a Unified Scikit-Learn Pipeline
+        # This groups your transformers and regressor together into one object
+        full_pipeline = Pipeline(steps=[
+            ('preprocessor', preprocessor),
+            ('model', GradientBoostingRegressor(
+                learning_rate=params['learning_rate'], 
+                max_depth=params['max_depth'], 
+                min_samples_leaf=params['min_samples_leaf'], 
+                min_samples_split=params['min_samples_split'], 
+                n_estimators=params['n_estimators']
+            ))
+        ])
+        
+        # 3. Train the entire Pipeline at once
+        # This fits the scaling, encoding, and the regression model together
+        full_pipeline.fit(input_features, target_feature)
+        
+        # Log Hyperparameters to MLflow Dashboard
         mlflow.log_params(params)
         
-        # 3. Train
-        trained_model = train_model(transformed_input, target_feature, params['learning_rate'], params['max_depth'], params['min_samples_leaf'], params['min_samples_split'], params['n_estimators'])
+        # 4. Save locally for DVC trackability (matches your folder structure)
+        joblib.dump(full_pipeline, output_path + '/pipeline.joblib')
         
-        # 4. Save
-        save_model(trained_model, output_path)
-        mlflow.sklearn.log_model(trained_model, "gradient_boosting_model")
-    
+        # 5. Log AND Register the full pipeline to MLflow Model Registry
+        # This pushes the model to DagsHub and auto-increments the model version
+        mlflow.sklearn.log_model(
+            sk_model=full_pipeline, 
+            artifact_path="car_price_pipeline_model",
+            registered_model_name="Car_Price_Pipeline"
+        )
+
 
 if __name__ == "__main__":
     main()
-    
-    
-    

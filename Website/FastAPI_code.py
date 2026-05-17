@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from starlette.responses import JSONResponse
-from schema.user_input import UserInput
-from schema.prediction_response import PredictionResponse
-from model.predict import predict_output, model, MODEL_VERSION
+from Website.schema.user_input import UserInput
+from Website.schema.prediction_response import PredictionResponse
+from Website.model.predict import predict_output, model, MODEL_VERSION
 import uvicorn
 
 app = FastAPI()

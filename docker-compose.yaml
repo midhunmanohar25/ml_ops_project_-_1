@@ -1,12 +1,29 @@
+version: '3.8'
+
 services:
-  predict_app:
+  # 1. FastAPI Backend Container
+  fastapi-backend:
     build: .
+    container_name: fastapi_backend_container
     ports:
       - "8000:8000"
     environment:
-      - MLFLOW_TRACKING_URI=http://host.docker.internal:5000
+      - MLFLOW_TRACKING_URI=https://dagshub.com/midhunmanohar25/ml_ops_project_-_1.mlflow
+      - MLFLOW_TRACKING_USERNAME=midhunmanohar25
+      - MLFLOW_TRACKING_PASSWORD=your_dagshub_token_here
       - MODEL_NAME=Car_Price_Pipeline
-      - MODEL_VERSION=Production
-    volumes:
-      # Maps your local MLflow data to the container so it can physically find the model files
-      - ./mlruns:/app/mlruns
+      - MODEL_VERSION=latest
+    command: uvicorn Website.FastAPI_code:app --host 0.0.0.0 --port 8000
+
+  # 2. Streamlit Frontend Container
+  streamlit-frontend:
+    build: .
+    container_name: streamlit_frontend_container
+    ports:
+      - "8501:8501"
+    environment:
+      # We point the frontend to the backend container name over Docker's internal network
+      - API_URL=http://fastapi-backend:8000/predict
+    command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0
+    depends_on:
+      - fastapi-backend
