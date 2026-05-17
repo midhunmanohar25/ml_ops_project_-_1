@@ -44,19 +44,26 @@ jobs:
         MODEL_NAME: "Car_Price_Pipeline"
         MODEL_VERSION: "1"
       run: |
-        # 1. Start FastAPI and pipe all logs (errors included) to uvicorn.log
+        # 1. Start FastAPI and pipe logs to uvicorn.log
         uvicorn Website.FastAPI_code:app --host 0.0.0.0 --port 8000 > uvicorn.log 2>&1 &
         
         # 2. Wait for FastAPI to pull the model from MLflow and boot up
         sleep 10 
         
-        # 3. Test if the app is alive. If it fails, print the log file contents!
-        curl --fail -X POST http://127.0.0.1:8000/predict \
+        # 3. Send test payload and capture the full response headers + body
+        curl -i -X POST http://127.0.0.1:8000/predict \
           -H "Content-Type: application/json" \
-          -d '{"car_age": 5, "is_luxury": true, "kms_per_year": 12000.5}' || { echo "❌ === UVICORN CRASH TRACEBACK ==="; cat uvicorn.log; exit 1; }
+          -d '{"car_age": 5, "is_luxury": true, "kms_per_year": 12000.5}' > response.log
         
-        # 4. Kill the process so CI can finish cleanly
+        # 4. Print the response so you can read the validation details in your GitHub logs
+        echo "=== API RESPONSE STACK ==="
+        cat response.log
+        
+        # 5. Kill the process
         pkill -f uvicorn
+        
+        # 6. Fail the build if the response doesn't contain a successful 200 OK status
+        grep -q "HTTP/1.1 200" response.log || exit 1
 
 
   run-using-docker:
