@@ -42,7 +42,7 @@ jobs:
         MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
         MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
         MODEL_NAME: "Car_Price_Pipeline"
-        MODEL_VERSION: "latest"
+        MODEL_VERSION: "1"
       run: |
         # 1. Start ONLY FastAPI in the background (pointing to your Website folder)
         uvicorn Website.FastAPI_code:app --host 0.0.0.0 --port 8000 &
@@ -58,7 +58,7 @@ jobs:
         # 4. Kill the process so CI can finish
         pkill uvicorn
 
-        
+
   run-using-docker:
       name: Docker CI
       needs: integration
