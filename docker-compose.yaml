@@ -10,7 +10,7 @@ services:
     environment:
       - MLFLOW_TRACKING_URI=https://dagshub.com/midhunmanohar25/ml_ops_project_-_1.mlflow
       - MLFLOW_TRACKING_USERNAME=midhunmanohar25
-      - MLFLOW_TRACKING_PASSWORD=your_actual_dagshub_token_here  # <-- Make sure your real token is here
+      - MLFLOW_TRACKING_PASSWORD=a82b91bff8dc254e275389514a301f0c7e654755  # <-- Make sure your real token is here
       - MODEL_NAME=Car_Price_Pipeline
       - MODEL_VERSION=1
     command: uvicorn Website.FastAPI_code:app --host 0.0.0.0 --port 8000
